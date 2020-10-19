@@ -1,0 +1,88 @@
+﻿@model AnuncioWebmotorsViewModel
+
+<h1>@ViewBag.Cadastro</h1>
+
+@using (Html.BeginForm("Gravar", "Home", FormMethod.Post))
+{
+<div class="form-row">
+
+    @Html.HiddenFor(model => model.ID)
+
+    <div class="form-group col-md-3">
+        <label for="Marca">Marca</label>
+        @Html.DropDownListFor(m => m.Marca, new SelectList(Model.Marcas, "--SELECT--"), "Marca",
+    new { @class = "form-control" })
+    </div>
+
+    <div class="form-group col-md-3">
+        <label for="inputPassword4">Modelo</label>
+        @Html.DropDownListFor(m => m.Modelo, new SelectList(Model.Modelos, "--SELECT--"), "Modelo",
+           new { @class = "form-control" })
+    </div>
+
+    <div class="form-group col-md-3">
+        <label for="Versao">Versão</label>
+        @Html.DropDownListFor(m => m.Versao, new SelectList(Model.Versoes, "--SELECT--"), "Versão",
+           new { @class = "form-control" })
+    </div>
+
+    <div class="form-group col-md-1">
+        <label for="Ano">Ano</label>
+        @Html.TextBox("Ano", Model.Ano, new { @class = "form-control", @type = "number" })
+    </div>
+
+    <div class="form-group col-md-2">
+        <label for="Quilometragem">Quilometragem</label>
+        @Html.TextBox("Quilometragem", Model.Quilometragem, new { @class = "form-control", @type = "number" })
+    </div>
+
+</div>
+    <div class="form-group">
+        <label for="Observacao">Observação</label>
+        @Html.TextArea("Observacao", Model.Observacao, new { @class = "form-control", @row = "5" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Gravar</button>
+}
+
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $('#Marca').on('change', function () {
+            GetModels(this.value);
+        });
+
+        $('#Modelo').on('change', function () {
+            GetVersions(this.value);
+        });
+    })
+
+    function GetModels(make) {
+        $.post("/Home/GetModels", { "make": make }, function (models) {
+            var $select = $('#Modelo');
+            $select.find('option').remove().end();
+            $.each(models, function (i, model) {
+                debugger;
+                $('<option>', {
+                    value: model.name
+                }).html(model.name).appendTo($select);
+            });
+        })
+    }
+
+    function GetVersions(model) {
+        var make = $('#Marca').val();
+        $.post("/Home/GetVersions", { "make": make, "model": model }, function (versions) {
+            var $select = $('#Versao');
+            $select.find('option').remove().end();
+            $.each(versions, function (i, version) {
+                debugger;
+                $('<option>', {
+                    value: version.name
+                }).html(version.name).appendTo($select);
+            });
+        })
+    }
+</script>
